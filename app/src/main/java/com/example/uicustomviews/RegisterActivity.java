@@ -75,12 +75,16 @@ public class RegisterActivity extends AppCompatActivity {
 
                     //注册成功，自动进入登陆活动，自动登陆。
                     Toast.makeText(RegisterActivity.this, "注册成功！", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                    Intent intent = new Intent();
                     intent.putExtra("account", account);
                     intent.putExtra("pwd", pwd);
+                    setResult(RESULT_OK, intent);
 //                   progressDialog.dismiss();
-                    startActivity(intent);
+//                    startActivity(intent);
                     finish();
+                }else{
+                    //注册失败。
+                    Toast.makeText(RegisterActivity.this, "注册失败，请重试", Toast.LENGTH_SHORT).show();
                 }
 
 

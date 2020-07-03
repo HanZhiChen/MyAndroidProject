@@ -1,5 +1,6 @@
 package com.example.uicustomviews;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
         register = (Button)findViewById(R.id.toRegisterActivityButton);
 
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
+
         //隐藏原来默认的title
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
@@ -67,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
-                startActivity(intent);
+//                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -82,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //尝试从启动此活动的意图中，获取账号密码并设置到EditText中。
-        autofillEdit();
+        autofillEdit(null);
 
 
 
@@ -90,17 +94,32 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void autofillEdit(){
-        Intent intent = getIntent();
-        String account = intent.getStringExtra("account");
-        String pwd = intent.getStringExtra("pwd");
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case 1:
+                if(resultCode == RESULT_OK){
+                    autofillEdit(data);
+                }
+        }
+    }
+
+    private void autofillEdit(Intent intent){
+        String account = null;
+        String pwd = null;
+        if(null != intent){
+            account = intent.getStringExtra("account");
+            pwd = intent.getStringExtra("pwd");
+        }
+
 
         if(account == null && pwd == null){
             /*
             如果从intent中获取的账号密码都为空，说明当前活动并不是从RegisterActivity启动。
             就将保存在SharedPreference中的账号密码信息读取出来并自动填充。
              */
-            pref = PreferenceManager.getDefaultSharedPreferences(this);
+
             boolean isRemember = pref.getBoolean("remember_password", false);
             if(isRemember){
                 //将账号和密码都设置到文本框内
