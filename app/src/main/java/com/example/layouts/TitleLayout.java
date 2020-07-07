@@ -1,4 +1,4 @@
-package com.example.uicustomviews;
+package com.example.layouts;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.example.uicustomviews.R;
 
 public class TitleLayout extends LinearLayout {
     public TitleLayout(Context context, AttributeSet attrs){

@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.uicustomviews.TitleLayout
+    <com.example.layouts.TitleLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
@@ -11,11 +11,14 @@
         android:id="@+id/formselectbutton1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="form1"
         android:layout_marginRight="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"/>
+        android:layout_marginTop="5dp"
+        android:text="井下通风数据采集表"
+        android:textSize="23dp"
+        android:background="@color/colorAccent"
+        android:textColor="@color/colorPrimary"/>
 
     <Button
         android:id="@+id/formselectbutton2"
@@ -25,24 +28,33 @@
         android:layout_marginLeft="15dp"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
-        android:text="form2" />
+        android:text="瓦斯抽采管网数据采集表"
+        android:textSize="23dp"
+        android:background="@color/colorAccent"
+        android:textColor="@color/colorPrimary"/>
 
     <Button
         android:id="@+id/formselectbutton3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="form3"
         android:layout_marginRight="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"/>
+        android:layout_marginTop="5dp"
+        android:text="区域消突验证工作面信息采集表"
+        android:textSize="23dp"
+        android:background="@color/colorAccent"
+        android:textColor="@color/colorPrimary"/>
     <Button
         android:id="@+id/formselectbutton4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="form4"
         android:layout_marginRight="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"/>
+        android:layout_marginTop="5dp"
+        android:text="区域消突验证钻孔数据采集表"
+        android:textSize="23dp"
+        android:background="@color/colorAccent"
+        android:textColor="@color/colorPrimary"/>
 </LinearLayout>
