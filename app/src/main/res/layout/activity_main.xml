@@ -22,6 +22,8 @@
             android:maxLines="1"
             android:hint="手机号或者邮箱"/>
 
+<!--        android:phoneNumber="true"-->
+
         <EditText
             android:id="@+id/pwdEdit"
             android:layout_width="match_parent"

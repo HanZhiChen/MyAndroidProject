@@ -15,7 +15,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VentilationTableActivity extends AppCompatActivity {
+public class VentilationTableActivity extends BaseActivity {
     private static final String TAG = "VentilationTableActivit";
 
     private List<String> ventilationDataFields = new ArrayList<>();
@@ -23,6 +23,9 @@ public class VentilationTableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ventilation_table_layout);
+
+        super.hideDefaultTitle();
+
         initVentilationDataFields();//初始化通风列表字段数据
 
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
@@ -31,6 +34,10 @@ public class VentilationTableActivity extends AppCompatActivity {
 
         VentilationTableAdapter adapter = new VentilationTableAdapter(ventilationDataFields);
         recyclerView.setAdapter(adapter);
+
+        findViewById(R.id.data_edit);
+
+
     }
 
     private  void initVentilationDataFields(){

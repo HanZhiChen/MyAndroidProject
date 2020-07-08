@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private EditText accountEdit;
     private EditText pwdEdit;
     private CheckBox rememberPass;
@@ -34,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        super.hideDefaultTitle();
+
+
         //初始化账号和密码的EditText控件
         accountEdit = (EditText)findViewById(R.id.nameEdit);
         pwdEdit = (EditText)findViewById(R.id.pwdEdit);
@@ -46,11 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         pref = PreferenceManager.getDefaultSharedPreferences(this);
 
-        //隐藏原来默认的title
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
-            actionBar.hide();
-        }
+
         //更改title的文本，以便与本活动对应
         TextView titleText = (TextView)findViewById(R.id.title_text);
         titleText.setText("登陆");

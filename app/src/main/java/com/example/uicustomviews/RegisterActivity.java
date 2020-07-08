@@ -1,14 +1,13 @@
 package com.example.uicustomviews;
 
-import android.app.ProgressDialog;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.util.Log;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BaseActivity {
     private static final String TAG = "RegisterActivity";
     private String account;
     private String pwd;
@@ -29,15 +28,13 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_layout);
 
+        super.hideDefaultTitle();
+
         //初始化账号和密码的EditText控件
         accountEdit = (EditText)findViewById(R.id.nameEdit);
         pwdEdit = (EditText)findViewById(R.id.pwdEdit);
 
-        //隐藏原来默认的title
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
-            actionBar.hide();
-        }
+
         //更改title的文本，以便与本活动对应
         TextView titleText = (TextView)findViewById(R.id.title_text);
         titleText.setText("注册");
