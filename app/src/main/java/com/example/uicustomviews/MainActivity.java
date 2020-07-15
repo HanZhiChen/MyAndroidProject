@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,9 +16,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.utils.HttpUtil;
+import com.example.utils.JsonParseUtil;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Response;
+
 public class MainActivity extends BaseActivity {
+    private static final String TAG = "MainActivity";
     private EditText accountEdit;
     private EditText pwdEdit;
     private CheckBox rememberPass;
@@ -138,25 +154,82 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private void loginService(String account, String password){
+    private void loginService(final String account, final String password){
         //如果账号是admin且密码是123456，就认为登陆成功。
+        Map<String, String> account_passwordMap = new HashMap<>();
+        account_passwordMap.put(account, password);
+
+        HttpUtil.sendOkHttpRequest("http://www.nthxqn.cn/kjqdxt/ajaction/v2/mysql/?type=mining&cmd=login",
+                account_passwordMap, new okhttp3.Callback(){
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        try {
+                            String responseData = response.body().string();
+                            Log.d(TAG, responseData);
+                            JSONArray jsonArray = JsonParseUtil.parseJSONWithJSONArray(responseData);
+                            JSONObject jsonObject = jsonArray.getJSONObject(0);
+                            String responseAccount = JsonParseUtil.getJsonValue(jsonObject, "YHM");
+                            if(responseAccount.equalsIgnoreCase(account)){
+                                //登陆成功就将当前账号密码保存至SharedPreferences
+                                editor = pref.edit();
+                                if(rememberPass.isChecked()){//检查复选框是否被选中
+                                    editor.putBoolean("remember_password", true);
+                                    editor.putString("account", account);
+                                    editor.putString("password", password);
+
+                                }else{
+                                    editor.clear();
+                                }
+                                editor.apply();
+
+                                Intent intent = new Intent(MainActivity.this, FormSelectActivity.class);
+                                intent.putExtra("account", responseAccount);
+                                startActivity(intent);
+                                finish();
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(MainActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                            }else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(MainActivity.this, "登录失败，请重试", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                            }
+                        }catch (Exception e) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, "登录失败，请重试", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "登录失败，请重试", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
         if(account.equals("admin") && password.equals("123456")){
 
-            //登陆成功就将当前账号密码保存至SharedPreferences
-            editor = pref.edit();
-            if(rememberPass.isChecked()){//检查复选框是否被选中
-                editor.putBoolean("remember_password", true);
-                editor.putString("account", account);
-                editor.putString("password", password);
 
-            }else{
-                editor.clear();
-            }
-            editor.apply();
 
-            Intent intent = new Intent(MainActivity.this, FormSelectActivity.class);
-            startActivity(intent);
-            finish();
+
 
         }else{
             Toast.makeText(MainActivity.this, "account or password is " +

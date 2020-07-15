@@ -14,14 +14,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adapters.VentilationTableAdapter;
 import com.example.pojo.VentilationData;
+import com.example.utils.HttpUtil;
+import com.example.utils.JsonParseUtil;
+import com.google.gson.JsonObject;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class VentilationTableActivity extends BaseActivity implements VentilationTableAdapter.SaveEditListener{
     private static final String TAG = "VentilationTableActivit";
@@ -53,12 +65,13 @@ public class VentilationTableActivity extends BaseActivity implements Ventilatio
         VentilationTableAdapter adapter = new VentilationTableAdapter(set.toArray(), VentilationTableActivity.this);
         recyclerView.setAdapter(adapter);
 
+
         Button commitButton = (Button) findViewById(R.id.title_empty);
         commitButton.setText("提交数据");
         commitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSave(v);
+                onSave();
             }
         });
 
@@ -82,22 +95,72 @@ public class VentilationTableActivity extends BaseActivity implements Ventilatio
         ventilationDataMap.put(fieldName, data);
     }
 
-    void onSave(View view){
+    private void onSave(){
         //处理存储edittext的map
-        //如判断客户名称是否填写且不为空格
+
         Set<String> keySet = ventilationDataMap.keySet();
-        for(String str : keySet){
-            Log.d(TAG, str + " : " + ventilationDataMap.get(str));
-        }
-//        if(map.get(0)!=null&&!map.get(0).trim().equals("")){
-//            //遍历处理map存储的内容
-//            for (int i=0; i<ventilationDataFields.size(); i++){
-//                Log.d(TAG, ventilationDataFields.get(i)+" : "+map.get(i));
+//        VentilationData ventilationData = new VentilationData();
 //
+        for(String keyStr : keySet){
+            Log.d(TAG, keyStr + " : " + ventilationDataMap.get(keyStr));
+            //这里还要做表单填写数据验证合法性，只不过暂时先没做。
+
+//            StringBuilder setMethodName = new StringBuilder("set");
+//            setMethodName.append(keyStr.substring(0,1).toUpperCase()).append(keyStr.substring(1).toLowerCase());
+////            Log.d(TAG, getMethodName.toString());
+//            try {
+//                Method m = VentilationData.class.getDeclaredMethod(setMethodName.toString(), String.class);
+//                m.invoke(ventilationData, ventilationDataMap.get(keyStr));
+//
+//            } catch (NoSuchMethodException e) {
+//                e.printStackTrace();
+//            } catch (IllegalAccessException e) {
+//                e.printStackTrace();
+//            } catch (InvocationTargetException e) {
+//                e.printStackTrace();
 //            }
-//
-//        }else{
-//            Toast.makeText(this,"客户名称必填且不可为空",Toast.LENGTH_SHORT).show();
-//        }
-    };
+        }
+//        Log.d(TAG, "onSave: runHttpUtil...");
+        HttpUtil.sendOkHttpRequest("http://www.nthxqn.cn/kjqdxt/ajaction/v2/mysql/?type=data&cmd=save",
+                ventilationDataMap, new okhttp3.Callback(){
+
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        Log.d(TAG, "onSave: runHttpUtil...");
+                        String responseData = response.body().string();
+                        JSONObject jsonObject = JsonParseUtil.parseJSONWithJSONObject(responseData);
+                        String status = JsonParseUtil.getJsonValue(jsonObject, "status");
+                        if(status.equalsIgnoreCase("ok")){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(VentilationTableActivity.this, "数据上传成功", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(VentilationTableActivity.this, "数据上传未成功，请重试", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(VentilationTableActivity.this, "数据上传未成功，请重试", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
+    }
+
+
 }

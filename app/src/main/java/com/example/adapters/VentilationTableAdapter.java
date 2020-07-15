@@ -9,6 +9,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -36,9 +37,6 @@ public class VentilationTableAdapter extends RecyclerView.Adapter<RecyclerView.V
     private final static int THIRD_VIEW_TYPE = 3;//第二种布局标识
 
 
-    //显示条数
-    private final int mSimpleNum = 20;
-
     //ViewHolder 创建次数
     private int mCreateTimes = 0;
 
@@ -51,7 +49,7 @@ public class VentilationTableAdapter extends RecyclerView.Adapter<RecyclerView.V
      //输入框文本缓存
     private SparseArray<String> mTextCache = new SparseArray<>();
 
-
+    private int spinnerPosition = 0;
 
     public interface  SaveEditListener{
         void saveEdit(String fieldName, String data);
@@ -69,7 +67,7 @@ public class VentilationTableAdapter extends RecyclerView.Adapter<RecyclerView.V
         switch (fieldStr){
             case "roadway":
                 return SECOND_VIEW_TYPE;
-            case "routingDate":
+            case "routingdate":
                 return THIRD_VIEW_TYPE;
             default:
                 return FIRST_VIEW_TYPE;
@@ -88,8 +86,6 @@ public class VentilationTableAdapter extends RecyclerView.Adapter<RecyclerView.V
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.datafillingedit_layout,
                     parent, false);
             EditHolder editHolder = new EditHolder(view);
-
-            view.setTag(editHolder);
             Log.i("onCreateViewHolder", "CreateTimes == " + mCreateTimes++);
 
             return  editHolder;
@@ -115,41 +111,29 @@ public class VentilationTableAdapter extends RecyclerView.Adapter<RecyclerView.V
         Log.i("onBindViewHolder", "BindTimes == " + mBindTimes++ + " Position == " + holder.getAdapterPosition());
 
         Log.i("TEXT_SHOW", "ShowPosition == " + holder.getAdapterPosition());
-        String fieldNameString = (String)mVentilationFields[position];
+        final String fieldNameString = (String)mVentilationFields[position];
         if(holder instanceof EditHolder){
             EditHolder editHolder = (EditHolder)holder;
+            editHolder.fieldName.setText(fieldNameString);
 
-
-
+            //从输入框文本缓存中，通过当前适配器位置获取缓存字符串，如果是空串或者为空，则说明此文本框并没有输入。
             editHolder.editText.setText(mTextCache.get(holder.getAdapterPosition()));
 
             // 如果已经绑定文本变化监听器不再次绑定
-            if(editHolder.editText.getTag()!=null && editHolder.editText.getTag() instanceof TextWatcher){
+            if ( editHolder.editText.getTag() != null && (boolean)editHolder.editText.getTag()) {
                 return;
             }
-//            holder.setIsRecyclable(false);
-
-
-
-
 
             //添加editText的监听事件
             TextWatcher textWatcher = new TextSwitcher(editHolder);
             editHolder.editText.addTextChangedListener(textWatcher);
-            editHolder.editText.setTag(textWatcher);
-
-
-
-            editHolder.fieldName.setText(fieldNameString);
-
-
-
-
+            editHolder.editText.setTag(mBoundWatcher);
 
         }else if(holder instanceof SpinnerHolder){
             ((SpinnerHolder)holder).fieldName.setText(fieldNameString);
 
-            List<RoadwayType> exampleRoadwayTypes = new ArrayList<RoadwayType>();
+            final List<RoadwayType> exampleRoadwayTypes = new ArrayList<RoadwayType>();
+            exampleRoadwayTypes.add(new RoadwayType("请选择"));
             exampleRoadwayTypes.add(new RoadwayType("巷道形状1"));
             exampleRoadwayTypes.add(new RoadwayType("巷道形状2"));
             exampleRoadwayTypes.add(new RoadwayType("巷道形状3"));
@@ -166,8 +150,44 @@ public class VentilationTableAdapter extends RecyclerView.Adapter<RecyclerView.V
             RoadwayTypeSpinnerAdapter adapter = new RoadwayTypeSpinnerAdapter(exampleRoadwayTypes);
 //            ArrayAdapter<String> adapter = new ArrayAdapter<String>(spinner.getContext(), R.layout.roadway_type_spinner_item, exampleRoadwayTypes);
             spinner.setAdapter(adapter);
+            spinner.setSelection(spinnerPosition,true);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    String roadwayTypeStatusStr = exampleRoadwayTypes.get(position).getStatus();
+                    SaveEditListener listener = (SaveEditListener) mContext;
+
+                    listener.saveEdit(fieldNameString, roadwayTypeStatusStr);
+//                    spinner.setSelection(position,true);
+                    spinnerPosition = position;
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
         }else{
-            ((DateTimeSelectHolder)holder).fieldName.setText(fieldNameString);
+            DateTimeSelectHolder dateTimeSelectHolder = (DateTimeSelectHolder)holder;
+            dateTimeSelectHolder.fieldName.setText(fieldNameString);
+
+            // 如果已经绑定文本变化监听器不再次绑定
+//            if (dateTimeSelectHolder.dateEdit.getTag() != null && (boolean)dateTimeSelectHolder.dateEdit.getTag()) {
+//                return;
+//            }
+            //添加dateEdit的监听事件
+//            TextWatcher textWatcher1 = new TextSwitcher(dateTimeSelectHolder);
+//            dateTimeSelectHolder.dateEdit.addTextChangedListener(textWatcher1);
+//            dateTimeSelectHolder.dateEdit.setTag(mBoundWatcher);
+
+            // 如果已经绑定文本变化监听器不再次绑定
+//            if (dateTimeSelectHolder.timeEdit.getTag() != null && (boolean)dateTimeSelectHolder.timeEdit.getTag()) {
+//                return;
+//            }
+            //添加timeEdit的监听事件
+//            TextWatcher textWatcher2 = new TextSwitcher(dateTimeSelectHolder);
+//            dateTimeSelectHolder.dateEdit.addTextChangedListener(textWatcher2);
+//            dateTimeSelectHolder.dateEdit.setTag(mBoundWatcher);
         }
     }
 
@@ -177,44 +197,50 @@ public class VentilationTableAdapter extends RecyclerView.Adapter<RecyclerView.V
         return mVentilationFields.length;
     }
 
-    static class EditHolder extends RecyclerView.ViewHolder{
+    static class BaseHolder extends RecyclerView.ViewHolder{
         TextView fieldName;
+
+
+        public BaseHolder(@NonNull View itemView) {
+            super(itemView);
+            fieldName = (TextView) itemView.findViewById(R.id.field_text);
+        }
+    }
+
+    static class EditHolder extends BaseHolder{
         EditText editText;
 
         public EditHolder(View view){
             super(view);
-            fieldName = (TextView) view.findViewById(R.id.field_text);
             editText = (EditText) view.findViewById(R.id.data_edit);
         }
     }
 
-    static class SpinnerHolder extends RecyclerView.ViewHolder{
-        TextView fieldName;
+    static class SpinnerHolder extends BaseHolder{
         Spinner spinner;
         public SpinnerHolder(View view){
             super(view);
-            fieldName = (TextView) view.findViewById(R.id.field_text);
             spinner = (Spinner) view.findViewById(R.id.data_spinner);
         }
     }
 
-    static class DateTimeSelectHolder extends RecyclerView.ViewHolder{
-        TextView fieldName;
+    static class DateTimeSelectHolder extends BaseHolder{
         EditText dateEdit;
         EditText timeEdit;
         public DateTimeSelectHolder(View view){
             super(view);
-            fieldName = (TextView) view.findViewById(R.id.field_text);
             dateEdit = (EditText) view.findViewById(R.id.date_edit);
             timeEdit = (EditText) view.findViewById(R.id.time_edit);
         }
     }
 
+
+
     class TextSwitcher implements TextWatcher {
 
-        private EditHolder mHolder;
+        private BaseHolder mHolder;
 
-        public TextSwitcher(EditHolder mHolder) {
+        public TextSwitcher(BaseHolder mHolder) {
             this.mHolder = mHolder;
         }
 

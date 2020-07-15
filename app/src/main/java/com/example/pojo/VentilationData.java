@@ -7,17 +7,17 @@ public class VentilationData {
     private String roadway;//巷道形状
     private double width;//宽度
     private double height;//高度
-    private double airSpeed1;//风速1
-    private double airSpeed2;//风速2
-    private double airSpeed3;//风速3
-    private double airAmend1;//风表修正系数a
-    private double airAmend2;//风表修正系数b
-    private double avgAir;//平均风速
-    private double airGion;//风量
+    private double airspeed1;//风速1
+    private double airspeed2;//风速2
+    private double airspeed3;//风速3
+    private double airamend1;//风表修正系数a
+    private double airamend2;//风表修正系数b
+    private double avgair;//平均风速
+    private double airgion;//风量
     private double gassdensity;//瓦斯浓度
     private double leeway;//风压
     private double temperature;//温度
-    private String routingDate;//巡检时间
+    private String routingdate;//巡检时间
     private int inspector;//巡检员
     private String picture;//现场图片
 
@@ -69,60 +69,60 @@ public class VentilationData {
         this.height = height;
     }
 
-    public double getAirSpeed1() {
-        return airSpeed1;
+    public double getAirspeed1() {
+        return airspeed1;
     }
 
-    public void setAirSpeed1(double airSpeed1) {
-        this.airSpeed1 = airSpeed1;
+    public void setAirspeed1(double airspeed1) {
+        this.airspeed1 = airspeed1;
     }
 
-    public double getAirSpeed2() {
-        return airSpeed2;
+    public double getAirspeed2() {
+        return airspeed2;
     }
 
-    public void setAirSpeed2(double airSpeed2) {
-        this.airSpeed2 = airSpeed2;
+    public void setAirspeed2(double airspeed2) {
+        this.airspeed2 = airspeed2;
     }
 
-    public double getAirSpeed3() {
-        return airSpeed3;
+    public double getAirspeed3() {
+        return airspeed3;
     }
 
-    public void setAirSpeed3(double airSpeed3) {
-        this.airSpeed3 = airSpeed3;
+    public void setAirspeed3(double airspeed3) {
+        this.airspeed3 = airspeed3;
     }
 
-    public double getAirAmend1() {
-        return airAmend1;
+    public double getAiramend1() {
+        return airamend1;
     }
 
-    public void setAirAmend1(double airAmend1) {
-        this.airAmend1 = airAmend1;
+    public void setAiramend1(double airamend1) {
+        this.airamend1 = airamend1;
     }
 
-    public double getAirAmend2() {
-        return airAmend2;
+    public double getAiramend2() {
+        return airamend2;
     }
 
-    public void setAirAmend2(double airAmend2) {
-        this.airAmend2 = airAmend2;
+    public void setAiramend2(double airamend2) {
+        this.airamend2 = airamend2;
     }
 
-    public double getAvgAir() {
-        return avgAir;
+    public double getAvgair() {
+        return avgair;
     }
 
-    public void setAvgAir(double avgAir) {
-        this.avgAir = avgAir;
+    public void setAvgair(double avgair) {
+        this.avgair = avgair;
     }
 
-    public double getAirGion() {
-        return airGion;
+    public double getAirgion() {
+        return airgion;
     }
 
-    public void setAirGion(double airGion) {
-        this.airGion = airGion;
+    public void setAirgion(double airgion) {
+        this.airgion = airgion;
     }
 
     public double getGassdensity() {
@@ -149,12 +149,12 @@ public class VentilationData {
         this.temperature = temperature;
     }
 
-    public String getRoutingDate() {
-        return routingDate;
+    public String getRoutingdate() {
+        return routingdate;
     }
 
-    public void setRoutingDate(String routingDate) {
-        this.routingDate = routingDate;
+    public void setRoutingdate(String routingdate) {
+        this.routingdate = routingdate;
     }
 
     public int getInspector() {
